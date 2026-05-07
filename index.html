@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AetherMod — Rankings</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060810;color:#e0e6f0;font-family:'Rajdhani',sans-serif;min-height:100vh}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,200,0.015) 2px,rgba(0,255,200,0.015) 4px);pointer-events:none;z-index:0}
+.container{max-width:1100px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+header{padding:40px 0 20px;text-align:center;border-bottom:1px solid rgba(0,255,180,0.15);margin-bottom:40px}
+.logo{font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;letter-spacing:6px;background:linear-gradient(90deg,#00ffb4,#00d4ff,#7b4fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.tagline{color:rgba(0,255,180,0.6);font-size:13px;letter-spacing:4px;text-transform:uppercase}
+.live-dot{display:inline-block;width:8px;height:8px;background:#00ffb4;border-radius:50%;margin-right:8px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.stat-card{background:rgba(0,255,180,0.04);border:1px solid rgba(0,255,180,0.12);border-radius:8px;padding:16px;text-align:center}
+.stat-num{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700;color:#00ffb4;display:block}
+.stat-label{font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.section-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:4px;color:rgba(0,255,180,0.7);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(0,255,180,0.12)}
+.leaderboard{background:rgba(6,8,16,0.8);border:1px solid rgba(0,255,180,0.1);border-radius:12px;overflow:hidden;margin-bottom:40px}
+.lb-header{display:grid;grid-template-columns:60px 1fr 160px 100px 100px 100px;padding:12px 20px;background:rgba(0,255,180,0.05);border-bottom:1px solid rgba(0,255,180,0.1);font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase}
+.lb-row{display:grid;grid-template-columns:60px 1fr 160px 100px 100px 100px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:center;transition:background 0.15s}
+.lb-row:hover{background:rgba(0,255,180,0.04)}
+.lb-row:last-child{border-bottom:none}
+.lb-row.top1{background:rgba(255,210,0,0.04)}
+.lb-row.top2{background:rgba(192,192,192,0.03)}
+.lb-row.top3{background:rgba(205,127,50,0.03)}
+.pos{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.3);text-align:center}
+.pos.p1{color:#ffd700}.pos.p2{color:#c0c0c0}.pos.p3{color:#cd7f32}
+.player-info{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:6px;background:rgba(0,255,180,0.1);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;border:1px solid rgba(0,255,180,0.2);flex-shrink:0;color:#00ffb4}
+.player-name{font-size:15px;font-weight:600;color:#e0e6f0}
+.rank-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.elo-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:#00ffb4;text-align:center}
+.wr-val{font-size:14px;font-weight:600;text-align:center}
+.parts-val{font-size:14px;color:rgba(255,255,255,0.5);text-align:center}
+.search-bar{display:flex;gap:12px;margin-bottom:30px}
+.search-input{flex:1;background:rgba(0,255,180,0.04);border:1px solid rgba(0,255,180,0.15);border-radius:8px;padding:10px 16px;color:#e0e6f0;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none}
+.search-input:focus{border-color:rgba(0,255,180,0.4)}
+.search-input::placeholder{color:rgba(255,255,255,0.25)}
+.loading{text-align:center;padding:60px;color:rgba(0,255,180,0.5);font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:4px}
+.footer{text-align:center;padding:30px 0;color:rgba(255,255,255,0.15);font-size:12px;letter-spacing:2px;border-top:1px solid rgba(0,255,180,0.08);margin-top:20px}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+<div class="container">
+  <header>
+    <div class="logo">AETHERMOD</div>
+    <div class="tagline"><span class="live-dot"></span>Left 4 Dead 2 · Competitive Rankings</div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-card"><span class="stat-num" id="totalJugadores">—</span><span class="stat-label">Jugadores</span></div>
+    <div class="stat-card"><span class="stat-num" id="totalPartidas">—</span><span class="stat-label">Partidas</span></div>
+    <div class="stat-card"><span class="stat-num">3</span><span class="stat-label">Servers</span></div>
+    <div class="stat-card"><span class="stat-num" id="topElo">—</span><span class="stat-label">ELO Máximo</span></div>
+  </div>
+
+  <div class="section-title">Leaderboard global</div>
+
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="Buscar jugador..." id="searchInput" oninput="filterPlayers()">
+  </div>
+
+  <div class="leaderboard">
+    <div class="lb-header">
+      <div style="text-align:center">#</div>
+      <div>Jugador</div>
+      <div>Rango</div>
+      <div style="text-align:center">ELO</div>
+      <div style="text-align:center">WR%</div>
+      <div style="text-align:center">Partidas</div>
+    </div>
+    <div id="playerList"><div class="loading">CARGANDO RANKINGS...</div></div>
+  </div>
+
+  <div class="footer">AETHERMOD · L4D2 COMPETITIVE · TEMPORADA 1</div>
+</div>
+
+<script>
+const API = 'https://aethermod-api-production.up.railway.app';
+let allPlayers = [];
+
+function getRankClass(rango) {
+  if (!rango) return '';
+  const r = rango.toLowerCase();
+  if (r.includes('legend') || r.includes('leyenda') || r.includes('gran maestro')) return 'background:rgba(0,255,180,0.12);color:#00ffb4;border:1px solid rgba(0,255,180,0.3)';
+  if (r.includes('maestro')) return 'background:rgba(180,0,255,0.1);color:#c060ff;border:1px solid rgba(180,0,255,0.2)';
+  if (r.includes('elite')) return 'background:rgba(180,0,255,0.1);color:#c060ff;border:1px solid rgba(180,0,255,0.2)';
+  if (r.includes('diamante')) return 'background:rgba(80,180,255,0.1);color:#50b4ff;border:1px solid rgba(80,180,255,0.25)';
+  if (r.includes('platino')) return 'background:rgba(0,200,255,0.1);color:#00c8ff;border:1px solid rgba(0,200,255,0.2)';
+  if (r.includes('oro')) return 'background:rgba(255,210,0,0.1);color:#ffd700;border:1px solid rgba(255,210,0,0.2)';
+  if (r.includes('plata')) return 'background:rgba(192,192,192,0.1);color:#b0b8c8;border:1px solid rgba(192,192,192,0.2)';
+  return 'background:rgba(205,127,50,0.15);color:#cd8a3f;border:1px solid rgba(205,127,50,0.25)';
+}
+
+function wrColor(wr) {
+  return wr >= 60 ? '#00ffb4' : wr >= 48 ? '#ffd700' : '#ff6060';
+}
+
+function posIcon(p) {
+  return p === 1 ? '🥇' : p === 2 ? '🥈' : p === 3 ? '🥉' : p;
+}
+
+function renderPlayers(list) {
+  if (list.length === 0) {
+    document.getElementById('playerList').innerHTML = '<div class="loading">NO SE ENCONTRARON JUGADORES</div>';
+    return;
+  }
+  document.getElementById('playerList').innerHTML = list.map((p, i) => {
+    const pos = i + 1;
+    const wr = p.partidas > 0 ? Math.round(p.victorias / p.partidas * 100) : 0;
+    const initials = p.nombre.substring(0, 2).toUpperCase();
+    const topClass = pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+    const posClass = pos === 1 ? 'p1' : pos === 2 ? 'p2' : pos === 3 ? 'p3' : '';
+    return `
+      <div class="lb-row ${topClass}">
+        <div class="pos ${posClass}">${posIcon(pos)}</div>
+        <div class="player-info">
+          <div class="avatar">${initials}</div>
+          <div class="player-name">${p.nombre}</div>
+        </div>
+        <div><span class="rank-badge" style="${getRankClass(p.rango)}">${p.rango}</span></div>
+        <div class="elo-val">${p.elo}</div>
+        <div class="wr-val" style="color:${wrColor(wr)}">${wr}%</div>
+        <div class="parts-val">${p.partidas}</div>
+      </div>`;
+  }).join('');
+}
+
+function filterPlayers() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderPlayers(allPlayers.filter(p => p.nombre.toLowerCase().includes(q)));
+}
+
+async function loadData() {
+  try {
+    const [rankings, stats] = await Promise.all([
+      fetch(`${API}/api/rankings`).then(r => r.json()),
+      fetch(`${API}/api/stats`).then(r => r.json())
+    ]);
+    allPlayers = rankings;
+    renderPlayers(allPlayers);
+    document.getElementById('totalJugadores').textContent = stats.jugadores || 0;
+    document.getElementById('totalPartidas').textContent = stats.partidas || 0;
+    document.getElementById('topElo').textContent = rankings.length > 0 ? rankings[0].elo : 0;
+  } catch(e) {
+    document.getElementById('playerList').innerHTML = '<div class="loading">ERROR CONECTANDO CON LA API</div>';
+  }
+}
+
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
